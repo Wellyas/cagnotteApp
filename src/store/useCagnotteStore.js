@@ -72,7 +72,8 @@ export function useCagnotteStore() {
             notifyListeners();
             return _cagnotte;
         } catch (e) {
-            _error = e?.message ?? 'Erreur lors de la mise à jour';
+            _error = e?.message || (typeof e === 'string' ? e : 'Erreur réseau ou base de données');
+            console.error('Update failed:', e);
             notifyListeners();
             return null;
         }

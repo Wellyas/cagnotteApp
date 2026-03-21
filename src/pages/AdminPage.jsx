@@ -13,7 +13,9 @@ function formatAmount(n) {
     return Number(n).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 function formatDate(ts) {
+    if (!ts) return '';
     const d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
     return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 

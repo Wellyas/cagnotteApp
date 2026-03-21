@@ -4,7 +4,10 @@ import { useCagnotteStore } from '../store/useCagnotteStore';
 import ParticipantModal from '../components/ParticipantModal';
 
 function formatDate(ts) {
-    return new Date(ts).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    if (!ts) return '—';
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
 }
 
 function formatAmount(n) {
