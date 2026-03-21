@@ -39,6 +39,7 @@ export default function AdminPage() {
         description: '',
         photo: '',
         target: '',
+        phone: '',
     });
     const [editSubmitting, setEditSubmitting] = useState(false);
 
@@ -49,6 +50,7 @@ export default function AdminPage() {
                 description: cagnotte.description || '',
                 photo: cagnotte.photo || '',
                 target: cagnotte.target || 0,
+                phone: cagnotte.phone || '',
             });
         }
     }, [cagnotte]);
@@ -256,14 +258,23 @@ export default function AdminPage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-1">Photo (URL)</label>
+                                <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-1">Téléphone Wero</label>
                                 <input
-                                    value={editForm.photo}
-                                    onChange={(e) => setEditForm({ ...editForm, photo: e.target.value })}
-                                    className="input-dark w-full rounded-xl px-3 py-2 text-sm"
-                                    placeholder="https://..."
+                                    value={editForm.phone}
+                                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                                    className="input-dark w-full rounded-xl px-3 py-2 text-sm font-mono"
+                                    placeholder="06 12 34 56 78"
                                 />
                             </div>
+                        </div>
+                        <div>
+                            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-1">Photo (URL)</label>
+                            <input
+                                value={editForm.photo}
+                                onChange={(e) => setEditForm({ ...editForm, photo: e.target.value })}
+                                className="input-dark w-full rounded-xl px-3 py-2 text-sm"
+                                placeholder="https://..."
+                            />
                         </div>
                         <button
                             onClick={handleUpdate}

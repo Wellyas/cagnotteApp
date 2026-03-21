@@ -144,6 +144,7 @@ const supabaseService = {
                 description: cagnotteData.description,
                 photo: cagnotteData.photo,
                 target: parseFloat(cagnotteData.target),
+                phone: cagnotteData.phone,
             })
             .eq('id', id)
             .select('id, title, description, photo, target, phone, created_at')
