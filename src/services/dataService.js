@@ -32,7 +32,7 @@ function lsLoad() {
 function lsSave(data) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch { }
+    } catch { /* ignore localStorage errors */ }
 }
 
 const localService = {

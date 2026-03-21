@@ -121,9 +121,9 @@ export default function CagnottePage() {
                         { icon: Users, label: 'Participants', value: participants.length },
                         { icon: CheckCircle, label: 'Validés', value: participants.filter(p => p.status === 'validated').length, color: 'text-emerald-400' },
                         { icon: Clock, label: 'En attente', value: participants.filter(p => p.status === 'pending').length, color: 'text-amber-400' },
-                    ].map(({ icon: Icon, label, value, color }) => (
+                    ].map(({ icon: StatIcon, label, value, color }) => (
                         <div key={label} className="glass rounded-2xl p-4 text-center">
-                            <Icon size={18} className={`mx-auto mb-1 ${color || 'text-purple-400'}`} />
+                            <StatIcon size={18} className={`mx-auto mb-1 ${color || 'text-purple-400'}`} />
                             <p className="text-xl font-bold text-white">{value}</p>
                             <p className="text-white/40 text-xs">{label}</p>
                         </div>

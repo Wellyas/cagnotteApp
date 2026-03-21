@@ -84,14 +84,14 @@ export default function CreatePage() {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="glass rounded-3xl p-8 space-y-5">
-                    {fields.map(({ name, label, placeholder, icon: Icon, textarea, type = 'text', required }) => (
+                    {fields.map(({ name, label, placeholder, icon: FieldIcon, textarea, type = 'text', required }) => (
                         <div key={name}>
                             <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider mb-2">
                                 {label}{required && <span className="text-pink-400 ml-1">*</span>}
                             </label>
                             <div className="relative">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400 pointer-events-none" style={textarea ? { top: '16px', transform: 'none' } : {}}>
-                                    <Icon size={16} />
+                                    <FieldIcon size={16} />
                                 </div>
                                 {textarea ? (
                                     <textarea
