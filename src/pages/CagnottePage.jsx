@@ -12,7 +12,7 @@ function formatAmount(n) {
 }
 
 export default function CagnottePage() {
-    const { cagnotte, participants, validatedAmount, pendingAmount, progress } = useCagnotteStore();
+    const { cagnotte, participants, validatedAmount, pendingAmount } = useCagnotteStore();
     const [showModal, setShowModal] = useState(false);
 
     if (!cagnotte) return null;
