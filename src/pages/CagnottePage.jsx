@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, TrendingUp, Clock, CheckCircle, Share2, Settings, ChevronRight, Euro } from 'lucide-react';
+import { Users, TrendingUp, Clock, CheckCircle, Share2, Settings, ChevronRight, Euro, FileText } from 'lucide-react';
 import { useCagnotteStore } from '../store/useCagnotteStore';
 import ParticipantModal from '../components/ParticipantModal';
 
@@ -52,11 +52,8 @@ export default function CagnottePage() {
                 </a>
 
                 {/* Title */}
-                <div className="absolute bottom-4 left-4 right-4">
-                    <h1 className="text-2xl font-bold text-white mb-1">{cagnotte.title}</h1>
-                    {cagnotte.description && (
-                        <p className="text-white/60 text-sm line-clamp-2">{cagnotte.description}</p>
-                    )}
+                <div className="absolute bottom-6 left-4 right-4 text-center">
+                    <h1 className="text-3xl font-black text-white drop-shadow-lg">{cagnotte.title}</h1>
                 </div>
             </div>
 
@@ -114,6 +111,19 @@ export default function CagnottePage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Description */}
+                {cagnotte.description && (
+                    <div className="glass rounded-3xl p-6 mt-3 animate-fadeIn">
+                        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <FileText size={14} className="text-purple-400" />
+                            À propos
+                        </h2>
+                        <div className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap break-words">
+                            {cagnotte.description}
+                        </div>
+                    </div>
+                )}
 
                 {/* Stats Row */}
                 <div className="grid grid-cols-3 gap-3 mt-3">

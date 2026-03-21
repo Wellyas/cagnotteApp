@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, User, Euro, ArrowRight, Smartphone, Copy, CheckCheck, ExternalLink, Loader2 } from 'lucide-react';
 import { useCagnotteStore } from '../store/useCagnotteStore';
+import { sanitizeString } from '../utils/security';
 
 const STEPS = { FORM: 'form', WERO: 'wero' };
 
@@ -28,7 +29,7 @@ export default function ParticipantModal({ onClose, phone }) {
         if (Object.keys(errs).length) { setErrors(errs); return; }
         setSubmitting(true);
         try {
-            const p = await addParticipant(name.trim(), parseFloat(amount));
+            const p = await addParticipant(sanitizeString(name), parseFloat(amount));
             if (p) {
                 setParticipant(p);
                 setStep(STEPS.WERO);

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Image, Phone, Target, Type, FileText, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { useCagnotteStore } from '../store/useCagnotteStore';
+import { sanitizeString, isSafeUrl } from '../utils/security';
 
 export default function CreatePage() {
     const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function CreatePage() {
     const validate = () => {
         const errs = {};
         if (!form.title.trim()) errs.title = 'Le titre est requis';
+        if (form.photo && !isSafeUrl(form.photo)) errs.photo = 'L\'URL doit commencer par http:// ou https://';
         if (!form.target || isNaN(form.target) || parseFloat(form.target) <= 0)
             errs.target = 'Montant invalide';
         if (!form.phone.trim()) errs.phone = 'Le numéro Wero est requis';
@@ -41,12 +43,12 @@ export default function CreatePage() {
         setSubmitting(true);
         try {
             await createCagnotte({
-                title: form.title.trim(),
-                description: form.description.trim(),
+                title: sanitizeString(form.title),
+                description: sanitizeString(form.description),
                 photo: form.photo.trim(),
                 target: parseFloat(form.target),
-                phone: form.phone.trim(),
-                adminPin: form.adminPin,
+                phone: sanitizeString(form.phone),
+                adminPin: sanitizeString(form.adminPin),
             });
             navigate('/cagnotte');
         } finally {
