@@ -64,10 +64,10 @@ export function useCagnotteStore() {
         return _cagnotte;
     }, []);
 
-    const addParticipant = useCallback(async (name, amount) => {
+    const addParticipant = useCallback(async (name, amount, isAnonymous = false, hideAmount = false) => {
         if (!_cagnotte) return null;
         try {
-            const p = await dataService.addParticipant(_cagnotte.id, name, amount);
+            const p = await dataService.addParticipant(_cagnotte.id, name, amount, isAnonymous, hideAmount);
             _participants = [p, ..._participants];
             notifyListeners();
             return p;

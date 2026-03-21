@@ -47,12 +47,14 @@ const localService = {
         lsSave({ ...lsLoad(), cagnotte });
         return cagnotte;
     },
-    async addParticipant(cagnotteId, name, amount) {
+    async addParticipant(cagnotteId, name, amount, isAnonymous = false, hideAmount = false) {
         const participant = {
             id: `p_${Date.now()}_${Math.random().toString(36).slice(2)}`,
             cagnotte_id: cagnotteId,
             name,
             amount: parseFloat(amount),
+            is_anonymous: isAnonymous,
+            hide_amount: hideAmount,
             status: 'pending',
             date: Date.now(),
             created_at: new Date().toISOString(),
@@ -128,10 +130,16 @@ const supabaseService = {
         if (error) throw error;
         return data;
     },
-    async addParticipant(cagnotteId, name, amount) {
+    async addParticipant(cagnotteId, name, amount, isAnonymous = false, hideAmount = false) {
         const { data, error } = await supabase
             .from('participations')
-            .insert({ cagnotte_id: cagnotteId, name, amount: parseFloat(amount) })
+            .insert({
+                cagnotte_id: cagnotteId,
+                name,
+                amount: parseFloat(amount),
+                is_anonymous: isAnonymous,
+                hide_amount: hideAmount
+            })
             .select()
             .single();
         if (error) throw error;

@@ -223,7 +223,15 @@ export default function AdminPage() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <p className="font-semibold text-white">{p.name}</p>
+                                            <p className="font-semibold text-white flex items-center gap-2">
+                                                {p.name}
+                                                {p.is_anonymous && (
+                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/50 border border-white/5 font-normal uppercase tracking-tighter">Anonyme</span>
+                                                )}
+                                                {p.hide_amount && (
+                                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-white/50 border border-white/5 font-normal uppercase tracking-tighter">Montant Masqué</span>
+                                                )}
+                                            </p>
                                             <p className="font-bold text-white text-lg">{formatAmount(p.amount)}€</p>
                                         </div>
                                         <p className="text-white/40 text-xs mt-0.5">{formatDate(p.created_at || p.date)}</p>

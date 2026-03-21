@@ -15,6 +15,9 @@ export default function ParticipantModal({ onClose, phone }) {
     const [participant, setParticipant] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
+    const [isAnonymous, setIsAnonymous] = useState(false);
+    const [hideAmount, setHideAmount] = useState(false);
+
     const validate = () => {
         const errs = {};
         if (!name.trim()) errs.name = 'Ton prénom est requis';
@@ -29,7 +32,7 @@ export default function ParticipantModal({ onClose, phone }) {
         if (Object.keys(errs).length) { setErrors(errs); return; }
         setSubmitting(true);
         try {
-            const p = await addParticipant(sanitizeString(name), parseFloat(amount));
+            const p = await addParticipant(sanitizeString(name), parseFloat(amount), isAnonymous, hideAmount);
             if (p) {
                 setParticipant(p);
                 setStep(STEPS.WERO);
@@ -96,6 +99,9 @@ export default function ParticipantModal({ onClose, phone }) {
                                             autoFocus
                                         />
                                     </div>
+                                    <p className="text-[10px] text-white/30 mt-1 italic">
+                                        L'administrateur verra ce nom pour valider ton paiement.
+                                    </p>
                                     {errors.name && <p className="text-pink-400 text-xs mt-1">{errors.name}</p>}
                                 </div>
 
@@ -135,6 +141,29 @@ export default function ParticipantModal({ onClose, phone }) {
                                             {v}€
                                         </button>
                                     ))}
+                                </div>
+
+                                {/* Options */}
+                                <div className="space-y-2 pt-2">
+                                    <label className="flex items-center gap-3 glass p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={isAnonymous}
+                                            onChange={(e) => setIsAnonymous(e.target.checked)}
+                                            className="w-5 h-5 rounded border-white/20 bg-white/10 text-purple-600 focus:ring-purple-500 focus:ring-offset-0"
+                                        />
+                                        <span className="text-sm text-white/80">Participer anonymement</span>
+                                    </label>
+
+                                    <label className="flex items-center gap-3 glass p-3 rounded-xl cursor-pointer hover:bg-white/5 transition-colors">
+                                        <input
+                                            type="checkbox"
+                                            checked={hideAmount}
+                                            onChange={(e) => setHideAmount(e.target.checked)}
+                                            className="w-5 h-5 rounded border-white/20 bg-white/10 text-purple-600 focus:ring-purple-500 focus:ring-offset-0"
+                                        />
+                                        <span className="text-sm text-white/80">Masquer le montant (public)</span>
+                                    </label>
                                 </div>
 
                                 <button

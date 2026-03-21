@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS participations (
   cagnotte_id UUID        NOT NULL REFERENCES cagnottes(id) ON DELETE CASCADE,
   name        TEXT        NOT NULL,
   amount      NUMERIC(10,2) NOT NULL CHECK (amount > 0),
+  is_anonymous BOOLEAN     NOT NULL DEFAULT FALSE,
+  hide_amount  BOOLEAN     NOT NULL DEFAULT FALSE,
   status      TEXT        NOT NULL DEFAULT 'pending'
                 CHECK (status IN ('pending', 'validated')),
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()

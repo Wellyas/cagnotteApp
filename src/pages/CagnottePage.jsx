@@ -143,15 +143,19 @@ export default function CagnottePage() {
                                     {/* Avatar */}
                                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
                                         style={{ background: 'linear-gradient(135deg, #6c63ff, #ff6b9d)' }}>
-                                        {p.name[0]?.toUpperCase()}
+                                        {p.is_anonymous ? '?' : (p.name[0]?.toUpperCase() || 'U')}
                                     </div>
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-white text-sm truncate">{p.name}</p>
+                                        <p className="font-semibold text-white text-sm truncate">
+                                            {p.is_anonymous ? 'Anonyme' : p.name}
+                                        </p>
                                         <p className="text-white/40 text-xs">{formatDate(p.date)}</p>
                                     </div>
                                     <div className="text-right flex-shrink-0">
-                                        <p className="font-bold text-white text-sm">{formatAmount(p.amount)}€</p>
+                                        <p className="font-bold text-white text-sm">
+                                            {p.hide_amount ? '—' : formatAmount(p.amount)}€
+                                        </p>
                                     </div>
                                 </div>
                             ))}
