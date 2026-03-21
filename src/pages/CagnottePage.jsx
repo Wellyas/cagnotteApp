@@ -18,7 +18,7 @@ export default function CagnottePage() {
     if (!cagnotte) return null;
 
     const totalWithPending = validatedAmount + pendingAmount;
-    const pendingProgress = Math.min((totalWithPending / cagnotte.target) * 100, 100);
+    const progressTotal = cagnotte.target > 0 ? Math.min((totalWithPending / cagnotte.target) * 100, 100) : 0;
 
     return (
         <div className="min-h-screen pb-24">
@@ -65,7 +65,7 @@ export default function CagnottePage() {
                         <div>
                             <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Collecté</p>
                             <p className="text-3xl font-bold text-white">
-                                {formatAmount(validatedAmount)}<span className="text-lg text-white/40">€</span>
+                                {formatAmount(totalWithPending)}<span className="text-lg text-white/40">€</span>
                             </p>
                             <p className="text-white/40 text-xs mt-0.5">
                                 sur{' '}
@@ -75,41 +75,22 @@ export default function CagnottePage() {
                             </p>
                         </div>
                         <div className="text-right">
-                            <p className="text-4xl font-black gradient-text">{Math.round(progress)}%</p>
-                            <p className="text-white/40 text-xs">complété</p>
+                            <p className="text-4xl font-black gradient-text">{Math.round(progressTotal)}%</p>
+                            <p className="text-white/40 text-xs">atteint</p>
                         </div>
                     </div>
 
                     {/* Progress bar */}
                     <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
-                        {/* Pending layer */}
                         <div
                             className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
                             style={{
-                                width: `${pendingProgress}%`,
-                                background: 'rgba(245, 158, 11, 0.3)',
-                            }}
-                        />
-                        {/* Validated layer */}
-                        <div
-                            className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-                            style={{
-                                width: `${progress}%`,
+                                width: `${progressTotal}%`,
                                 background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)',
                             }}
                         />
                     </div>
 
-                    <div className="flex gap-4 mt-3">
-                        <div className="flex items-center gap-1.5 text-xs text-white/50">
-                            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 inline-block" />
-                            Validé: {formatAmount(validatedAmount)}€
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-white/50">
-                            <span className="w-2 h-2 rounded-full bg-amber-500/50 inline-block" />
-                            En attente: {formatAmount(pendingAmount)}€
-                        </div>
-                    </div>
                 </div>
 
                 {/* Description */}
@@ -126,11 +107,10 @@ export default function CagnottePage() {
                 )}
 
                 {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-3 mt-3">
+                <div className="grid grid-cols-2 gap-3 mt-3">
                     {[
                         { icon: Users, label: 'Participants', value: participants.length },
-                        { icon: CheckCircle, label: 'Validés', value: participants.filter(p => p.status === 'validated').length, color: 'text-emerald-400' },
-                        { icon: Clock, label: 'En attente', value: participants.filter(p => p.status === 'pending').length, color: 'text-amber-400' },
+                        { icon: Euro, label: 'Objectif', value: `${formatAmount(cagnotte.target)}€`, color: 'text-pink-400' },
                     ].map(({ icon: StatIcon, label, value, color }) => (
                         <div key={label} className="glass rounded-2xl p-4 text-center">
                             <StatIcon size={18} className={`mx-auto mb-1 ${color || 'text-purple-400'}`} />
@@ -170,18 +150,8 @@ export default function CagnottePage() {
                                         <p className="font-semibold text-white text-sm truncate">{p.name}</p>
                                         <p className="text-white/40 text-xs">{formatDate(p.date)}</p>
                                     </div>
-                                    {/* Amount + Badge */}
                                     <div className="text-right flex-shrink-0">
                                         <p className="font-bold text-white text-sm">{formatAmount(p.amount)}€</p>
-                                        {p.status === 'validated' ? (
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">
-                                                Validé
-                                            </span>
-                                        ) : (
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-medium">
-                                                En attente
-                                            </span>
-                                        )}
                                     </div>
                                 </div>
                             ))}
