@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, TrendingUp, Clock, CheckCircle, Share2, Settings, ChevronRight, Euro, FileText } from 'lucide-react';
+import { Users, TrendingUp, Share2, Settings, ChevronRight, Euro, FileText } from 'lucide-react';
 import { useCagnotteStore } from '../store/useCagnotteStore';
 import ParticipantModal from '../components/ParticipantModal';
 
