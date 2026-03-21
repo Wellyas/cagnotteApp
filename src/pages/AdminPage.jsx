@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-    Shield, CheckCircle, Clock, ArrowLeft, Trash2, RefreshCw, Database, Wifi
+    Shield, CheckCircle, Clock, ArrowLeft, Trash2, RefreshCw, Database, Wifi, Edit2, Save, X
 } from 'lucide-react';
 import { useCagnotteStore } from '../store/useCagnotteStore';
 import { USE_SUPABASE } from '../services/dataService';
+import { isSafeUrl } from '../utils/security';
 
 const ADMIN_SECRET = import.meta.env.VITE_ADMIN_SECRET;
 
@@ -20,9 +21,9 @@ export default function AdminPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const {
-        cagnotte, participants, validatedAmount, progress,
+        cagnotte, participants, validatedAmount, pendingAmount, progress,
         validateParticipant, invalidateParticipant, deleteCagnotte,
-        checkAdminPin, refreshParticipants,
+        checkAdminPin, refreshParticipants, updateCagnotte,
     } = useCagnotteStore();
 
     const [pin, setPin] = useState('');
@@ -30,6 +31,43 @@ export default function AdminPage() {
     const [pinError, setPinError] = useState('');
     const [checkingPin, setCheckingPin] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    // Edit state
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState({
+        title: '',
+        description: '',
+        photo: '',
+        target: '',
+    });
+    const [editSubmitting, setEditSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (cagnotte) {
+            setEditForm({
+                title: cagnotte.title || '',
+                description: cagnotte.description || '',
+                photo: cagnotte.photo || '',
+                target: cagnotte.target || 0,
+            });
+        }
+    }, [cagnotte]);
+
+    const handleUpdate = async () => {
+        if (!editForm.title.trim()) return;
+        if (editForm.photo && !isSafeUrl(editForm.photo)) return;
+        
+        setEditSubmitting(true);
+        try {
+            await updateCagnotte({
+                ...editForm,
+                target: parseFloat(editForm.target) || 0,
+            });
+            setIsEditing(false);
+        } finally {
+            setEditSubmitting(false);
+        }
+    };
 
     // ── URL secret token auto-login ────────────────────────────────────────────
     useEffect(() => {
@@ -89,7 +127,7 @@ export default function AdminPage() {
                 <div className="fixed inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute -top-40 -right-20 w-96 h-96 bg-purple-600 rounded-full opacity-10 blur-3xl" />
                 </div>
-                <div className="w-full max-w-sm animate-fadeIn relative z-10">
+                <div className="w-full max-sm animate-fadeIn relative z-10">
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 animate-pulse-glow"
                             style={{ background: 'linear-gradient(135deg, #6c63ff, #8b5cf6)' }}>
@@ -149,6 +187,11 @@ export default function AdminPage() {
         );
     }
 
+    const targetVal = parseFloat(cagnotte.target) || 0;
+    const validatedPercent = targetVal > 0 ? (validatedAmount / targetVal) * 100 : 0;
+    const pendingPercent = targetVal > 0 ? (pendingAmount / targetVal) * 100 : 0;
+    const totalPercent = Math.min(validatedPercent + pendingPercent, 100);
+
     // ── Admin Dashboard ────────────────────────────────────────────────────────
     return (
         <div className="min-h-screen pb-12">
@@ -173,39 +216,146 @@ export default function AdminPage() {
                     </div>
                 </div>
 
-                <h1 className="text-2xl font-bold text-white mb-1">{cagnotte.title}</h1>
-                <p className="text-white/40 text-sm mb-6">Gérez les participations</p>
+                <div className="flex items-center justify-between mb-2">
+                    {isEditing ? (
+                        <input
+                            value={editForm.title}
+                            onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-white font-bold text-2xl w-full"
+                        />
+                    ) : (
+                        <h1 className="text-2xl font-bold text-white">{cagnotte.title}</h1>
+                    )}
+                    <button
+                        onClick={() => isEditing ? setIsEditing(false) : setIsEditing(true)}
+                        className="p-2 rounded-lg glass text-white/50 hover:text-white transition-colors"
+                    >
+                        {isEditing ? <X size={18} /> : <Edit2 size={18} />}
+                    </button>
+                </div>
+
+                {isEditing ? (
+                    <div className="space-y-4 mb-6 animate-fadeIn">
+                        <div>
+                            <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-1">Description</label>
+                            <textarea
+                                value={editForm.description}
+                                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                                className="input-dark w-full rounded-xl p-3 text-sm resize-none"
+                                rows={3}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-1">Objectif (€)</label>
+                                <input
+                                    type="number"
+                                    value={editForm.target}
+                                    onChange={(e) => setEditForm({ ...editForm, target: e.target.value })}
+                                    className="input-dark w-full rounded-xl px-3 py-2 text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] text-white/40 uppercase tracking-widest mb-1">Photo (URL)</label>
+                                <input
+                                    value={editForm.photo}
+                                    onChange={(e) => setEditForm({ ...editForm, photo: e.target.value })}
+                                    className="input-dark w-full rounded-xl px-3 py-2 text-sm"
+                                    placeholder="https://..."
+                                />
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleUpdate}
+                            disabled={editSubmitting}
+                            className="btn-primary w-full py-3 rounded-xl text-white font-bold text-sm flex items-center justify-center gap-2"
+                        >
+                            {editSubmitting ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={16} />}
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                ) : (
+                    <p className="text-white/40 text-sm mb-6">Gérez les participations</p>
+                )}
 
                 {/* Summary */}
                 <div className="glass rounded-2xl p-6 mb-6 relative overflow-hidden">
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 relative z-10">
-                        <div>
-                            <p className="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-2">Total Collecté</p>
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-4xl font-black text-white leading-none">
-                                    {formatAmount(validatedAmount).split(',')[0]}
-                                </span>
-                                <span className="text-xl font-bold text-white/80">
-                                    ,{formatAmount(validatedAmount).split(',')[1]}€
-                                </span>
-                                {cagnotte.target > 0 && (
-                                    <span className="text-white/30 font-normal text-sm ml-2">
-                                        / {formatAmount(cagnotte.target)}€
+                        <div className="flex gap-8">
+                            <div>
+                                <p className="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-2">Validé (Reçu)</p>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-4xl font-black text-emerald-400 leading-none">
+                                        {formatAmount(validatedAmount).split(',')[0]}
                                     </span>
-                                )}
+                                    <span className="text-xl font-bold text-emerald-400/80">
+                                        ,{formatAmount(validatedAmount).split(',')[1]}€
+                                    </span>
+                                </div>
                             </div>
+                            {pendingAmount > 0 && (
+                                <div>
+                                    <p className="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-2">En attente</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-2xl font-black text-amber-400 leading-none">
+                                            {formatAmount(pendingAmount).split(',')[0]}
+                                        </span>
+                                        <span className="text-sm font-bold text-amber-400/80">
+                                            ,{formatAmount(pendingAmount).split(',')[1]}€
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        {cagnotte.target > 0 && (
+
+                        {targetVal > 0 && (
                             <div className="text-right">
-                                <p className="text-5xl font-black gradient-text leading-none">{Math.round(progress)}%</p>
-                                <p className="text-white/30 text-[10px] uppercase tracking-wider font-bold mt-1">Global</p>
+                                {pendingAmount > 0 ? (
+                                    <p className="text-white/30 text-[10px] uppercase tracking-wider font-bold mb-1">
+                                        Total: <span className="text-white/60">{Math.round(totalPercent)}%</span>
+                                    </p>
+                                ) : null}
+                                <p className="text-5xl font-black gradient-text leading-none">{Math.round(validatedPercent)}%</p>
+                                <p className="text-white/30 text-[10px] uppercase tracking-wider font-bold mt-1 text-emerald-400/50">Confirmé</p>
                             </div>
                         )}
                     </div>
-                    {cagnotte.target > 0 && (
-                        <div className="h-4 bg-black/30 backdrop-blur-md rounded-full overflow-hidden border border-white/5 p-0.5 shadow-inner relative z-10">
-                            <div className="h-full rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(108,99,255,0.4)]"
-                                style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)' }} />
+
+                    {targetVal > 0 && (
+                        <div className="space-y-3 relative z-10">
+                            <div className="h-5 bg-black/40 backdrop-blur-md rounded-full overflow-hidden border border-white/5 p-1 shadow-inner flex">
+                                {/* Validated Bar */}
+                                <div
+                                    className="h-full rounded-l-full transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                                    style={{
+                                        width: `${Math.min(validatedPercent, 100)}%`,
+                                        background: 'linear-gradient(90deg, #10b981, #059669)',
+                                        borderRight: validatedPercent < totalPercent ? '1px solid rgba(255,255,255,0.1)' : 'none'
+                                    }}
+                                />
+                                {/* Pending Bar */}
+                                <div
+                                    className={`h-full transition-all duration-1000 ease-out relative ${validatedPercent === 0 ? 'rounded-l-full' : ''} ${totalPercent >= 100 ? 'rounded-r-full' : ''}`}
+                                    style={{
+                                        width: `${Math.min(pendingPercent, 100 - validatedPercent)}%`,
+                                        background: 'linear-gradient(90deg, #f59e0b, #d97706)',
+                                        opacity: 0.8
+                                    }}
+                                />
+                            </div>
+                            
+                            {/* Legend */}
+                            <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+                                <div className="flex items-center gap-1.5 text-emerald-400">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-400" /> Confirmé
+                                </div>
+                                <div className="flex items-center gap-1.5 text-amber-500">
+                                    <div className="w-2 h-2 rounded-full bg-amber-500" /> En attente
+                                </div>
+                                <div className="ml-auto text-white/30">
+                                    Objectif: {formatAmount(targetVal)}€
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

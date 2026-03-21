@@ -64,6 +64,20 @@ export function useCagnotteStore() {
         return _cagnotte;
     }, []);
 
+    const updateCagnotte = useCallback(async (cagnotteData) => {
+        if (!_cagnotte) return null;
+        try {
+            const updated = await dataService.updateCagnotte(_cagnotte.id, cagnotteData);
+            _cagnotte = { ..._cagnotte, ...updated };
+            notifyListeners();
+            return _cagnotte;
+        } catch (e) {
+            _error = e?.message ?? 'Erreur lors de la mise à jour';
+            notifyListeners();
+            return null;
+        }
+    }, []);
+
     const addParticipant = useCallback(async (name, amount, isAnonymous = false, hideAmount = false) => {
         if (!_cagnotte) return null;
         try {
@@ -178,5 +192,6 @@ export function useCagnotteStore() {
         deleteCagnotte,
         checkAdminPin,
         refreshParticipants,
+        updateCagnotte,
     };
 }

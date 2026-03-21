@@ -47,6 +47,12 @@ const localService = {
         lsSave({ ...lsLoad(), cagnotte });
         return cagnotte;
     },
+    async updateCagnotte(id, data) {
+        const current = lsLoad();
+        const updated = { ...current.cagnotte, ...data };
+        lsSave({ ...current, cagnotte: updated });
+        return updated;
+    },
     async addParticipant(cagnotteId, name, amount, isAnonymous = false, hideAmount = false) {
         const participant = {
             id: `p_${Date.now()}_${Math.random().toString(36).slice(2)}`,
@@ -125,6 +131,21 @@ const supabaseService = {
                 phone: cagnotteData.phone,
                 admin_pin: cagnotteData.adminPin,
             })
+            .select('id, title, description, photo, target, phone, created_at')
+            .single();
+        if (error) throw error;
+        return data;
+    },
+    async updateCagnotte(id, cagnotteData) {
+        const { data, error } = await supabase
+            .from('cagnottes')
+            .update({
+                title: cagnotteData.title,
+                description: cagnotteData.description,
+                photo: cagnotteData.photo,
+                target: parseFloat(cagnotteData.target),
+            })
+            .eq('id', id)
             .select('id, title, description, photo, target, phone, created_at')
             .single();
         if (error) throw error;
