@@ -28,7 +28,7 @@ export default function CreatePage() {
         const errs = {};
         if (!form.title.trim()) errs.title = 'Le titre est requis';
         if (form.photo && !isSafeUrl(form.photo)) errs.photo = 'L\'URL doit commencer par http:// ou https://';
-        if (!form.target || isNaN(form.target) || parseFloat(form.target) <= 0)
+        if (form.target && (isNaN(form.target) || parseFloat(form.target) < 0))
             errs.target = 'Montant invalide';
         if (!form.phone.trim()) errs.phone = 'Le numéro Wero est requis';
         if (!form.adminPin || form.adminPin.length < 4)
@@ -46,7 +46,7 @@ export default function CreatePage() {
                 title: sanitizeString(form.title),
                 description: sanitizeString(form.description),
                 photo: form.photo.trim(),
-                target: parseFloat(form.target),
+                target: form.target ? parseFloat(form.target) : 0,
                 phone: sanitizeString(form.phone),
                 adminPin: sanitizeString(form.adminPin),
             });
@@ -60,7 +60,7 @@ export default function CreatePage() {
         { name: 'title', label: 'Titre de la cagnotte', placeholder: 'Ex: Cadeau anniversaire de Marie', icon: Type, required: true },
         { name: 'description', label: 'Description', placeholder: 'Décrivez le cadeau…', icon: FileText, textarea: true },
         { name: 'photo', label: 'URL de la photo', placeholder: 'https://example.com/photo.jpg', icon: Image },
-        { name: 'target', label: 'Montant cible (€)', placeholder: 'Ex: 150', icon: Target, type: 'number', required: true },
+        { name: 'target', label: 'Montant cible (€)', placeholder: 'Optionnel (ex: 150)', icon: Target, type: 'number', required: false },
         { name: 'phone', label: 'Numéro Wero (bénéficiaire)', placeholder: 'Ex: 06 12 34 56 78', icon: Phone, required: true },
         { name: 'adminPin', label: 'Code PIN admin', placeholder: '4+ chiffres', icon: Sparkles, type: 'password', required: true },
     ];

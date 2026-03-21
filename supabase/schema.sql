@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS cagnottes (
   title       TEXT        NOT NULL,
   description TEXT,
   photo       TEXT,
-  target      NUMERIC(10,2) NOT NULL CHECK (target > 0),
+  target      NUMERIC(10,2) NOT NULL DEFAULT 0 CHECK (target >= 0),
   phone       TEXT        NOT NULL,
   admin_pin   TEXT        NOT NULL,   -- Never exposed via public API (RLS)
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()

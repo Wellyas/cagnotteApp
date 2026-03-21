@@ -180,18 +180,22 @@ export default function AdminPage() {
                 <div className="glass rounded-2xl p-5 mb-4">
                     <div className="flex items-center justify-between mb-3">
                         <div>
-                            <p className="text-white/50 text-xs uppercase tracking-wider">Collecté / Objectif</p>
+                            <p className="text-white/50 text-xs uppercase tracking-wider">Collecté{cagnotte.target > 0 && ' / Objectif'}</p>
                             <p className="text-white font-bold text-xl mt-0.5">
                                 {formatAmount(validatedAmount)}€
-                                <span className="text-white/30 font-normal text-base"> / {formatAmount(cagnotte.target)}€</span>
+                                {cagnotte.target > 0 && (
+                                    <span className="text-white/30 font-normal text-base"> / {formatAmount(cagnotte.target)}€</span>
+                                )}
                             </p>
                         </div>
-                        <span className="text-3xl font-black gradient-text">{Math.round(progress)}%</span>
+                        {cagnotte.target > 0 && <span className="text-3xl font-black gradient-text">{Math.round(progress)}%</span>}
                     </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all duration-700"
-                            style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)' }} />
-                    </div>
+                    {cagnotte.target > 0 && (
+                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-700"
+                                style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)' }} />
+                        </div>
+                    )}
                 </div>
 
                 {/* Participants */}

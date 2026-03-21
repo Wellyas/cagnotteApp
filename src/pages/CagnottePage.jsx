@@ -67,30 +67,35 @@ export default function CagnottePage() {
                             <p className="text-3xl font-bold text-white">
                                 {formatAmount(totalWithPending)}<span className="text-lg text-white/40">€</span>
                             </p>
-                            <p className="text-white/40 text-xs mt-0.5">
-                                sur{' '}
-                                <span className="text-white/70 font-semibold">
-                                    {formatAmount(cagnotte.target)}€
-                                </span>
-                            </p>
+                            {cagnotte.target > 0 && (
+                                <p className="text-white/40 text-xs mt-0.5">
+                                    sur{' '}
+                                    <span className="text-white/70 font-semibold">
+                                        {formatAmount(cagnotte.target)}€
+                                    </span>
+                                </p>
+                            )}
                         </div>
-                        <div className="text-right">
-                            <p className="text-4xl font-black gradient-text">{Math.round(progressTotal)}%</p>
-                            <p className="text-white/40 text-xs">atteint</p>
-                        </div>
+                        {cagnotte.target > 0 && (
+                            <div className="text-right">
+                                <p className="text-4xl font-black gradient-text">{Math.round(progressTotal)}%</p>
+                                <p className="text-white/40 text-xs">atteint</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Progress bar */}
-                    <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
-                        <div
-                            className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-                            style={{
-                                width: `${progressTotal}%`,
-                                background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)',
-                            }}
-                        />
-                    </div>
-
+                    {cagnotte.target > 0 && (
+                        <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
+                            <div
+                                className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                                style={{
+                                    width: `${progressTotal}%`,
+                                    background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)',
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Description */}
@@ -110,8 +115,8 @@ export default function CagnottePage() {
                 <div className="grid grid-cols-2 gap-3 mt-3">
                     {[
                         { icon: Users, label: 'Participants', value: participants.length },
-                        { icon: Euro, label: 'Objectif', value: `${formatAmount(cagnotte.target)}€`, color: 'text-pink-400' },
-                    ].map(({ icon: StatIcon, label, value, color }) => (
+                        cagnotte.target > 0 ? { icon: Euro, label: 'Objectif', value: `${formatAmount(cagnotte.target)}€`, color: 'text-pink-400' } : null,
+                    ].filter(Boolean).map(({ icon: StatIcon, label, value, color }) => (
                         <div key={label} className="glass rounded-2xl p-4 text-center">
                             <StatIcon size={18} className={`mx-auto mb-1 ${color || 'text-purple-400'}`} />
                             <p className="text-xl font-bold text-white">{value}</p>
