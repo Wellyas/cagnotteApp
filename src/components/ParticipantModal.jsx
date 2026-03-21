@@ -50,20 +50,16 @@ export default function ParticipantModal({ onClose, phone }) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    // Build a soft Wero deep link (works on some banking apps)
-    const cleanPhone = phone.replace(/\s/g, '');
-    const weroDeepLink = `wero://pay?phone=${encodeURIComponent(cleanPhone)}&amount=${participant?.amount || ''}&label=${encodeURIComponent(participant ? `Cagnotte - ${participant.name}` : 'Cagnotte')}`;
-
     return (
         <>
             {/* Overlay */}
             <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
                 onClick={onClose}
             />
 
             {/* Sheet */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 animate-slideUp">
+            <div className="fixed bottom-0 left-0 right-0 z-[210] animate-slideUp">
                 <div className="glass-dark rounded-t-3xl max-w-lg mx-auto p-6 pb-10">
 
                     {/* Handle */}
@@ -208,7 +204,7 @@ export default function ParticipantModal({ onClose, phone }) {
                                 </div>
                             </div>
 
-                            {/* Steps */}
+                            {/* Instructions */}
                             <div className="glass rounded-2xl p-4 mb-5 space-y-3">
                                 <p className="text-white/60 text-xs font-semibold uppercase tracking-wider">Instructions</p>
                                 {[
@@ -227,24 +223,9 @@ export default function ParticipantModal({ onClose, phone }) {
                                 ))}
                             </div>
 
-                            {/* Wero deep link button */}
-                            <a
-                                href={weroDeepLink}
-                                className="btn-wero w-full rounded-xl py-4 text-white font-bold text-sm flex items-center justify-center gap-2 mb-3"
-                            >
-                                <Smartphone size={18} />
-                                Ouvrir Wero directement
-                                <ExternalLink size={14} className="opacity-70" />
-                            </a>
-
-                            <p className="text-white/30 text-xs text-center mb-4">
-                                Le bouton ci-dessus tente d'ouvrir Wero directement dans ton app bancaire.
-                                <br />S'il ne fonctionne pas, utilise les instructions manuelles.
-                            </p>
-
                             <button
                                 onClick={onClose}
-                                className="w-full py-3 rounded-xl text-white/60 glass text-sm hover:text-white transition-colors"
+                                className="w-full py-4 rounded-xl text-white font-bold bg-white/10 hover:bg-white/20 transition-all border border-white/10 shadow-lg"
                             >
                                 J'ai effectué le virement ✓
                             </button>

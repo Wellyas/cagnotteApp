@@ -21,7 +21,7 @@ export default function CagnottePage() {
     const progressTotal = cagnotte.target > 0 ? Math.min((totalWithPending / cagnotte.target) * 100, 100) : 0;
 
     return (
-        <div className="min-h-screen pb-24">
+        <div className="min-h-screen pb-40">
             {/* Fixed background */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-20 w-96 h-96 bg-purple-600 rounded-full opacity-10 blur-3xl" />
@@ -60,40 +60,55 @@ export default function CagnottePage() {
             <div className="px-4 max-w-lg mx-auto relative z-10">
 
                 {/* Progress Card */}
-                <div className="glass rounded-3xl p-6 mt-4 animate-fadeIn">
-                    <div className="flex items-end justify-between mb-4">
+                <div className="glass rounded-3xl p-6 mt-6 animate-fadeIn relative overflow-hidden">
+                    {/* Background decoration */}
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-bl-full pointer-events-none" />
+
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 relative z-10">
                         <div>
-                            <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Collecté</p>
-                            <p className="text-3xl font-bold text-white">
-                                {formatAmount(totalWithPending)}<span className="text-lg text-white/40">€</span>
-                            </p>
+                            <p className="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-2">Montant Collecté</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-4xl font-black text-white leading-none">
+                                    {formatAmount(totalWithPending).split(',')[0]}
+                                </span>
+                                <span className="text-xl font-bold text-white/80">
+                                    ,{formatAmount(totalWithPending).split(',')[1]}€
+                                </span>
+                            </div>
                             {cagnotte.target > 0 && (
-                                <p className="text-white/40 text-xs mt-0.5">
-                                    sur{' '}
-                                    <span className="text-white/70 font-semibold">
+                                <p className="text-white/40 text-xs mt-2 flex items-center gap-1.5">
+                                    <span>sur un objectif de</span>
+                                    <span className="text-white/70 font-bold bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
                                         {formatAmount(cagnotte.target)}€
                                     </span>
                                 </p>
                             )}
                         </div>
                         {cagnotte.target > 0 && (
-                            <div className="text-right">
-                                <p className="text-4xl font-black gradient-text">{Math.round(progressTotal)}%</p>
-                                <p className="text-white/40 text-xs">atteint</p>
+                            <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-end gap-1">
+                                <div className="text-right">
+                                    <p className="text-5xl font-black gradient-text leading-none">{Math.round(progressTotal)}%</p>
+                                    <p className="text-white/30 text-[10px] uppercase tracking-wider font-bold mt-1">Atteint</p>
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Progress bar */}
+                    {/* Progress bar container */}
                     {cagnotte.target > 0 && (
-                        <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                                className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-                                style={{
-                                    width: `${progressTotal}%`,
-                                    background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)',
-                                }}
-                            />
+                        <div className="space-y-2 relative z-10">
+                            <div className="h-4 bg-black/30 backdrop-blur-md rounded-full overflow-hidden border border-white/5 p-0.5 shadow-inner">
+                                <div
+                                    className="h-full rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(108,99,255,0.4)]"
+                                    style={{
+                                        width: `${progressTotal}%`,
+                                        background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)',
+                                    }}
+                                >
+                                    {/* Shimmer effect inside the bar */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-2/3 -translate-x-full animate-[shimmer_2s_infinite]" />
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -170,7 +185,7 @@ export default function CagnottePage() {
             </div>
 
             {/* Floating CTA */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 glass-dark">
+            <div className="fixed bottom-0 left-0 right-0 p-4 pb-8 glass-dark z-[100] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
                 <div className="max-w-lg mx-auto flex gap-3">
                     <button
                         onClick={() => {
@@ -178,19 +193,21 @@ export default function CagnottePage() {
                                 navigator.share({ title: cagnotte.title, url: window.location.href });
                             } else {
                                 navigator.clipboard.writeText(window.location.href);
+                                alert('Lien copié !');
                             }
                         }}
-                        className="glass rounded-xl px-4 py-3.5 text-white/60 hover:text-white transition-colors flex items-center gap-2"
+                        className="glass rounded-2xl px-5 py-4 text-white/70 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center"
+                        title="Partager"
                     >
-                        <Share2 size={18} />
+                        <Share2 size={20} />
                     </button>
                     <button
                         onClick={() => setShowModal(true)}
-                        className="btn-primary flex-1 rounded-xl py-3.5 text-white font-bold text-sm flex items-center justify-center gap-2"
+                        className="btn-primary flex-1 rounded-2xl py-4 text-white font-black text-sm flex items-center justify-center gap-3 shadow-lg shadow-purple-500/20 active:scale-95 transition-transform"
                     >
-                        <Euro size={18} />
-                        Participer à la cagnotte
-                        <ChevronRight size={16} />
+                        <Euro size={20} />
+                        PARTICIPER À LA CAGNOTTE
+                        <ChevronRight size={18} />
                     </button>
                 </div>
             </div>

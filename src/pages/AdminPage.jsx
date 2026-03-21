@@ -177,22 +177,34 @@ export default function AdminPage() {
                 <p className="text-white/40 text-sm mb-6">Gérez les participations</p>
 
                 {/* Summary */}
-                <div className="glass rounded-2xl p-5 mb-4">
-                    <div className="flex items-center justify-between mb-3">
+                <div className="glass rounded-2xl p-6 mb-6 relative overflow-hidden">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 relative z-10">
                         <div>
-                            <p className="text-white/50 text-xs uppercase tracking-wider">Collecté{cagnotte.target > 0 && ' / Objectif'}</p>
-                            <p className="text-white font-bold text-xl mt-0.5">
-                                {formatAmount(validatedAmount)}€
+                            <p className="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-2">Total Collecté</p>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-4xl font-black text-white leading-none">
+                                    {formatAmount(validatedAmount).split(',')[0]}
+                                </span>
+                                <span className="text-xl font-bold text-white/80">
+                                    ,{formatAmount(validatedAmount).split(',')[1]}€
+                                </span>
                                 {cagnotte.target > 0 && (
-                                    <span className="text-white/30 font-normal text-base"> / {formatAmount(cagnotte.target)}€</span>
+                                    <span className="text-white/30 font-normal text-sm ml-2">
+                                        / {formatAmount(cagnotte.target)}€
+                                    </span>
                                 )}
-                            </p>
+                            </div>
                         </div>
-                        {cagnotte.target > 0 && <span className="text-3xl font-black gradient-text">{Math.round(progress)}%</span>}
+                        {cagnotte.target > 0 && (
+                            <div className="text-right">
+                                <p className="text-5xl font-black gradient-text leading-none">{Math.round(progress)}%</p>
+                                <p className="text-white/30 text-[10px] uppercase tracking-wider font-bold mt-1">Global</p>
+                            </div>
+                        )}
                     </div>
                     {cagnotte.target > 0 && (
-                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div className="h-full rounded-full transition-all duration-700"
+                        <div className="h-4 bg-black/30 backdrop-blur-md rounded-full overflow-hidden border border-white/5 p-0.5 shadow-inner relative z-10">
+                            <div className="h-full rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(108,99,255,0.4)]"
                                 style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)' }} />
                         </div>
                     )}
