@@ -128,4 +128,13 @@ export default function CreatePage() {
                     >
                         {submitting ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
                         {submitting ? 'Création en cours…' : 'Créer la cagnotte'}
-                 
+                    </button>
+                </form>
+
+                <p className="text-center text-white/30 text-xs mt-6">
+                    Les données sont stockées localement sur cet appareil
+                </p>
+            </div>
+        </div>
+    );
+}
