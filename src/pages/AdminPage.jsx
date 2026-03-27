@@ -24,7 +24,7 @@ export default function AdminPage() {
     const [searchParams] = useSearchParams();
     const {
         cagnotte, participants, validatedAmount, pendingAmount, progress,
-        validateParticipant, invalidateParticipant, deleteCagnotte,
+        validateParticipant, invalidateParticipant, deleteCagnotte, deleteParticipant,
         checkAdminPin, refreshParticipants, updateCagnotte,
     } = useCagnotteStore();
 
@@ -437,6 +437,17 @@ export default function AdminPage() {
                                                     </button>
                                                 </>
                                             )}
+                                            <button 
+                                                onClick={() => {
+                                                    if (window.confirm('Supprimer cette participation ?')) {
+                                                        deleteParticipant(p.id);
+                                                    }
+                                                }}
+                                                className="ml-auto p-1.5 rounded-lg text-white/20 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                                                title="Supprimer"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

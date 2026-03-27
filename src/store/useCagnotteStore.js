@@ -127,6 +127,19 @@ export function useCagnotteStore() {
         }
     }, []);
 
+    const deleteParticipant = useCallback(async (id) => {
+        const originalParticipants = [..._participants];
+        _participants = _participants.filter((p) => p.id !== id);
+        notifyListeners();
+        try {
+            await dataService.deleteParticipant(id);
+        } catch (e) {
+            _participants = originalParticipants;
+            _error = e?.message ?? 'Erreur de suppression';
+            notifyListeners();
+        }
+    }, []);
+
     const deleteCagnotte = useCallback(async () => {
         const id = _cagnotte?.id;
         _loading = true;
@@ -191,6 +204,7 @@ export function useCagnotteStore() {
         validateParticipant,
         invalidateParticipant,
         deleteCagnotte,
+        deleteParticipant,
         checkAdminPin,
         refreshParticipants,
         updateCagnotte,

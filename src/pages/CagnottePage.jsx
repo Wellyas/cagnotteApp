@@ -19,9 +19,12 @@ export default function CagnottePage() {
     const [showModal, setShowModal] = useState(false);
 
     if (!cagnotte) return null;
-
-    const totalWithPending = validatedAmount + pendingAmount;
-    const progressTotal = cagnotte.target > 0 ? Math.min((totalWithPending / cagnotte.target) * 100, 100) : 0;
+    
+    // Public view: only count what is confirmed
+    const totalAmount = validatedAmount;
+    const progressPercent = cagnotte.target > 0 ? Math.min((totalAmount / cagnotte.target) * 100, 100) : 0;
+    
+    const validatedParticipants = participants.filter(p => p.status === 'validated');
 
     return (
         <div className="min-h-screen pb-40">
@@ -72,10 +75,10 @@ export default function CagnottePage() {
                             <p className="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-2">Montant Collecté</p>
                             <div className="flex items-baseline gap-1">
                                 <span className="text-4xl font-black text-white leading-none">
-                                    {formatAmount(totalWithPending).split(',')[0]}
+                                    {formatAmount(totalAmount).split(',')[0]}
                                 </span>
                                 <span className="text-xl font-bold text-white/80">
-                                    ,{formatAmount(totalWithPending).split(',')[1]}€
+                                    ,{formatAmount(totalAmount).split(',')[1]}€
                                 </span>
                             </div>
                             {cagnotte.target > 0 && (
@@ -90,8 +93,8 @@ export default function CagnottePage() {
                         {cagnotte.target > 0 && (
                             <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-end gap-1">
                                 <div className="text-right">
-                                    <p className="text-5xl font-black gradient-text leading-none">{Math.round(progressTotal)}%</p>
-                                    <p className="text-white/30 text-[10px] uppercase tracking-wider font-bold mt-1">Atteint</p>
+                                    <p className="text-5xl font-black gradient-text leading-none">{Math.round(progressPercent)}%</p>
+                                    <p className="text-white/30 text-[10px] uppercase tracking-wider font-bold mt-1">Confirmé</p>
                                 </div>
                             </div>
                         )}
@@ -101,13 +104,13 @@ export default function CagnottePage() {
                     {cagnotte.target > 0 && (
                         <div className="space-y-2 relative z-10">
                             <div className="h-4 bg-black/30 backdrop-blur-md rounded-full overflow-hidden border border-white/5 p-0.5 shadow-inner">
-                                <div
-                                    className="h-full rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(108,99,255,0.4)]"
-                                    style={{
-                                        width: `${progressTotal}%`,
-                                        background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)',
-                                    }}
-                                >
+                                    <div
+                                        className="h-full rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(108,99,255,0.4)]"
+                                        style={{
+                                            width: `${progressPercent}%`,
+                                            background: 'linear-gradient(90deg, #6c63ff, #ff6b9d)',
+                                        }}
+                                    >
                                     {/* Shimmer effect inside the bar */}
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-2/3 -translate-x-full animate-[shimmer_2s_infinite]" />
                                 </div>
@@ -132,7 +135,7 @@ export default function CagnottePage() {
                 {/* Stats Row */}
                 <div className="grid grid-cols-2 gap-3 mt-3">
                     {[
-                        { icon: Users, label: 'Participants', value: participants.length },
+                        { icon: Users, label: 'Participants', value: validatedParticipants.length },
                         cagnotte.target > 0 ? { icon: Euro, label: 'Objectif', value: `${formatAmount(cagnotte.target)}€`, color: 'text-pink-400' } : null,
                     ].filter(Boolean).map(({ icon: StatIcon, label, value, color }) => (
                         <div key={label} className="glass rounded-2xl p-4 text-center">
@@ -148,19 +151,23 @@ export default function CagnottePage() {
                     <div className="flex items-center justify-between mb-3">
                         <h2 className="font-semibold text-white/80 flex items-center gap-2">
                             <TrendingUp size={16} className="text-purple-400" />
-                            Participations
+                            Participations confirmées
                         </h2>
-                        <span className="text-xs text-white/40">{participants.length} au total</span>
+                        <span className="text-xs text-white/40">{validatedParticipants.length}</span>
                     </div>
 
-                    {participants.length === 0 ? (
+                    {validatedParticipants.length === 0 ? (
                         <div className="glass rounded-2xl p-8 text-center">
                             <div className="text-4xl mb-3">🎉</div>
-                            <p className="text-white/50 text-sm">Soyez le premier à participer !</p>
+                            <p className="text-white/50 text-sm">Soyez le premier à confirmer votre participation !</p>
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            {[...participants].sort((a, b) => b.date - a.date).map((p) => (
+                            {[...validatedParticipants].sort((a, b) => {
+                                const dateA = a.created_at || a.date;
+                                const dateB = b.created_at || b.date;
+                                return new Date(dateB) - new Date(dateA);
+                            }).map((p) => (
                                 <div key={p.id}
                                     className="glass rounded-2xl px-4 py-3 flex items-center gap-3 animate-fadeIn">
                                     {/* Avatar */}

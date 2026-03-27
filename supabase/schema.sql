@@ -59,6 +59,10 @@ CREATE POLICY "public_insert_participation" ON participations
 CREATE POLICY "admin_update_participation" ON participations
   FOR UPDATE USING (true);
 
+-- Admin: delete participation (via RPC with PIN check)
+CREATE POLICY "admin_delete_participation" ON participations
+  FOR DELETE USING (true);
+
 -- Admin: update cagnotte details
 CREATE POLICY "admin_update_cagnotte" ON cagnottes
   FOR UPDATE USING (true);

@@ -87,6 +87,13 @@ const localService = {
             ),
         });
     },
+    async deleteParticipant(id) {
+        const current = lsLoad();
+        lsSave({
+            ...current,
+            participants: current.participants.filter((p) => p.id !== id),
+        });
+    },
     async deleteCagnotte() {
         lsSave({ ...defaultData });
     },
@@ -178,6 +185,13 @@ const supabaseService = {
         const { error } = await supabase
             .from('participations')
             .update({ status: 'pending' })
+            .eq('id', id);
+        if (error) throw error;
+    },
+    async deleteParticipant(id) {
+        const { error } = await supabase
+            .from('participations')
+            .delete()
             .eq('id', id);
         if (error) throw error;
     },
